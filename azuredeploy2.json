@@ -1,0 +1,405 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Subscription Id": {
+      "type": "string",
+      "metadata": {
+        "description": "Please enter the subscription id of your subscription."
+      }
+    },
+    "Resource Group Name": {
+      "type": "string",
+      "defaultValue": "HMRC-BOT-RG-DEV",
+      "metadata": { "description": "Please re- enter the name of resource group here." }
+    },
+    "BotCore App Service Plan": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "HMRC-BOT-ASP-DEV",
+      "metadata": {
+        "description": "Please enter the name of app service plan that will host the BotCore Runtime & Admin Service."
+      }
+    },
+    "BotCore App Service Plan SKU": {
+      "type": "string",
+      "defaultValue": "B2",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Select the type of the App Service plan"
+      }
+    },
+    "BotCore Admin Service Web App": {
+      "type": "string",
+      "defaultValue": "HMRC-BOT-AS-DEV",
+      "metadata": { "description": "Name of BotCore admin service Web App." }
+    },
+                  "BotCore Admin Service ASP.NET Core version":{
+                       "type": "string",
+                        "allowedValues": [
+                           ".NET Core 2.2",
+                           ".NET Core 2.1",
+                            ".NET Core 2.0"
+                        ],
+                       "defaultValue": ".NET Core 2.2",
+                       "metadata": { "description": "Select asp.net core version for admin service Web App." }
+              },
+    "Redis Cache": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "HMRC-BOT-RC-DEV",
+      "metadata": {
+        "description": "Please enter the name of Redis Cache that will be used by BotCore for short term memory."
+      }
+    },
+    "Redis Cache SKU Family": {
+      "type": "string",
+      "allowedValues": [
+        "C",
+        "P"
+      ],
+      "defaultValue": "C",
+      "metadata": {
+        "description": "Select the type of the cache family (C = Basic/Standard, P = Premium)"
+      }
+    },
+    "Redis Cache SKU": {
+      "type": "string",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "defaultValue": "Basic",
+      "metadata": {
+        "description": "Select the type of the cache."
+      }
+    },
+    "Redis Cache SKU Capacity": {
+      "type": "int",
+      "defaultValue": "0",
+      "allowedValues": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "metadata": {
+        "description": "The size of the Redis cache to deploy. Valid values for C family are 0, 1, 2, 3, 4, 5, 6 & for P family are 1, 2, 3, 4."
+      }
+    },
+    "Redis Cache Redis Version": {
+      "type": "string",
+      "allowedValues": [
+        "2.8"
+      ],
+      "defaultValue": "2.8",
+      "metadata": {
+        "description": "Version of Redis Cache."
+      }
+    },
+    "BotCore DB Server": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "hmrcbotsqlserverdev",
+      "metadata": {
+        "description": "Please enter the name of the database server for BotCore Operational DB."
+      }
+    },
+    "DB Server Username": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "hmrcbotdbadmin",
+      "metadata": {
+        "description": "Please enter the admin login id for DB Server."
+      }
+    },
+    "DB Server Password": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Please enter the admin password for DB Server. Password should contain 8 characters, atleast one number,one special character and a lowercase and uppercase letter."
+      }
+    },
+    "BotCore Operational DB": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "HMRC-BOT-SQL-DEV",
+      "metadata": {
+        "description": "Please enter the name for the BotCore Operational Database."
+      }
+    },
+    "SQL Database Collation": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "BotCore Operational DB Edition": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "Select the type of the DB edition."
+      }
+    },
+    "SQL Database Requested SOM": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "S0",
+        "S1",
+        "S2",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "metadata": {
+        "description": "Select the plan for the DB based on the Edition (Basic = Basic | Standard = S0,S1,S2 | Premium = P1,P2,P3)."
+      }
+    },
+    "Cognitive service Name": {
+      "type": "string",
+      "defaultValue": "HMRC-BOT-CS-DEV",
+      "metadata": { "description": "Enter the preferred name for cognitive service." }
+    },
+    "Cognitive service Location": {
+      "type": "string",
+      "defaultValue": "West US",
+      "allowedValues": [
+        "East US",
+        "West US",
+        "West US 2",
+        "West Europe",
+        "North Europe",
+        "Australia East",
+        "Brazil South",
+        "Southeast Asia",
+        "East Asia"
+      ],
+      "metadata": { "description": "Please choose location for LUIS" }
+    },
+    "Cognitive Service Type": {
+      "type": "string",
+      "allowedValues": [
+        "LUIS"
+      ],
+      "defaultValue": "LUIS",
+      "metadata": { "description": "Leave as LUIS" }
+    },
+    "Cognitive service SKU": {
+      "type": "string",
+      "allowedValues": [
+        "F0",
+        "S0"
+      ],
+      "defaultValue": "S0",
+      "metadata": { "description": "Please choose SKU for LUIS" }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('BotCore App Service Plan')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "sku": {
+        "name": "[parameters('BotCore App Service Plan SKU')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "App Service Plan"
+      },
+      "properties": {
+        "name": "[parameters('BotCore App Service Plan')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "name": "[parameters('Storage')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('Storage Type')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "Storage"
+      },
+      "kind": "Storage"
+    },
+    {
+      "name": "[parameters('Redis Cache')]",
+      "type": "Microsoft.Cache/Redis",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-04-01",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "Redis Cache"
+      },
+      "properties": {
+        "sku": {
+          "name": "[parameters('Redis Cache SKU')]",
+          "family": "[parameters('Redis Cache SKU Family')]",
+          "capacity": "[parameters('Redis Cache SKU Capacity')]"
+        },
+        "redisVersion": "[parameters('Redis Cache Redis Version')]"
+      }
+    },
+    {
+      "name": "[parameters('BotCore DB Server')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "bot-operational-server"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('DB Server Username')]",
+        "administratorLoginPassword": "[parameters('DB Server Password')]"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('BotCore DB Server'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "[parameters('BotCore Operational DB')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('BotCore DB Server'))]"
+          ],
+          "tags": {
+            "displayName": "SQL Database"
+          },
+          "properties": {
+            "collation": "[parameters('SQL Database Collation')]",
+            "edition": "[parameters('BotCore Operational DB Edition')]",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "[parameters('SQL Database Requested SOM')]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "[parameters('BotCore Admin Service Web App')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('BotCore App Service Plan'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('BotCore App Service Plan')))]": "Resource",
+        "displayName": "Web App"
+      },
+      "properties": {
+        "name": "[parameters('BotCore Admin Service Web App')]",
+        "version": "[parameters('BotCore Admin Service ASP.NET Core version')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('BotCore App Service Plan'))]"
+      }
+    },
+    {
+      "apiVersion": "[parameters('Data Factory Version')]",
+      "name": "[parameters('BotCore operational Data Factory')]",
+      "location": "[parameters('Data Factory location')]",
+      "type": "Microsoft.DataFactory/dataFactories",
+      "properties": {}
+    },
+    {
+      "apiVersion": "2016-03-01",
+      "name": "[parameters('Function App')]",
+      "type": "Microsoft.Web/sites",
+      "properties": {
+        "name": "[parameters('Function App')]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('Storage'),';AccountKey=',listKeys(resourceId(parameters('Subscription Id'),parameters('Resource Group Name'),'Microsoft.Storage/storageAccounts', parameters('Storage')), '2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "8.11.1"
+            }
+          ],
+          "alwaysOn": true
+        },
+        "clientAffinityEnabled": false,
+        "serverFarmId": "[concat('/subscriptions/', parameters('Subscription Id'),'/resourcegroups/', parameters('Resource Group Name'), '/providers/Microsoft.Web/serverfarms/', parameters('BotCore App Service Plan'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('BotCore App Service Plan'))]"
+        ]
+
+      },
+      "location": "[parameters('Function app Location')]",
+      "kind": "functionapp"
+    },
+    {
+      "apiVersion": "2017-04-18",
+      "name": "[parameters('Cognitive service Name')]",
+      "location": "[parameters('Cognitive service Location')]",
+      "type": "Microsoft.CognitiveServices/accounts",
+      "kind": "[parameters('Cognitive Service Type')]",
+      "sku": {
+        "name": "[parameters('Cognitive service SKU')]"
+      },
+      "properties": {}
+    },
+    {
+      "apiVersion": "2018-02-01",
+      "name": "pid-a4a70351-7f6f-41e0-8d6f-80ee2f04dfae",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
